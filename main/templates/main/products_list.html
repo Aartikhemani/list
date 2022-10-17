@@ -1,0 +1,80 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Products List{% endblock title %}
+{% block content %}
+    {% if messages %}
+    {% for message in messages %}
+     <p {% if message.tags %} class="alert alert-{{ message.tags }} mb-5"{% endif %} >{{ message }}</p>
+   {% endfor %}
+   {% endif %}
+  <table class="table table-borderless">
+  <thead class="border-bottom font-weight-bold">
+
+
+  <tr>
+
+      <td></td>
+      <td>SKU</td>
+      <td>Name</td>
+      <td>Price</td>
+      <td>Category</td>
+      <td>Size</td>
+
+  </tr>
+
+  </thead>
+  <tbody>
+  {% for prod in list %}
+      {% csrf_token %}
+  <tr id="{{ prod.id }}">
+      <td><input type="checkbox" name="product_id[]" value="{{ prod.id }}" id="delete_product">
+      </td>
+      <td>{{ prod.sku }}</td>
+      <td>{{ prod.name }}</td>
+      <td>${{ prod.price }}</td>
+      <td>{{ prod.category }}</td>
+      <td style='text-transform:uppercase'>{{ prod.size}}</td>
+  </tr>
+  {% endfor %}
+
+  </tbody>
+
+   </table>
+    <button type="submit" id="delete_btn" class="btn_delete">Delete</button>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script>
+    $(document).ready(function (){
+        $('#delete_btn').click(function (){
+            if(confirm('are you sure you want to delete?')){
+                var id =[];
+                var csrf=$('input[name=csrfmiddlewaretoken]').val();
+                $(':checkbox:checked').each(function (i){
+                    id[i]=$(this).val()
+                })
+                if(id.length===0){
+                    alert('please select items to delete')
+                }else{
+                    console.log(id)
+                    $.ajax({
+                        url:'.',
+                        method:"POST",
+                        data:{
+                            id,
+                            csrfmiddlewaretoken:csrf
+                        },
+                        success:function (response){
+                           for(var i=0; i<id.length; i++){
+                               $('tr#'+id[i]+'').css('background-color','#ccc');
+                               $('tr#'+id[i]+'').fadeOut('slow');
+                           }
+                        }
+                    })
+                }
+
+            }
+        })
+    })
+    </script>
+      <a href="{% url 'products_form' %}" class="btn btn-success">Add Product</a>
+
+{% endblock %}

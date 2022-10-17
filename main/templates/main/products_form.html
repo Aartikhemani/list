@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <h3>Products Form</h3>
+     <form action="" method="post" novalidate class="shadow p-5">
+   {% if messages %}
+    {% for message in messages %}
+     <p {% if message.tags %} class="alert alert-{{ message.tags }} mb-5"{% endif %} >{{ message }}</p>
+   {% endfor %}
+   {% endif %}
+   {% csrf_token %}
+       {% for forms in form %}
+           <br>
+        <div class="form-group mb-3">
+            {{ forms.label_tag }} {{ forms }} <small class="text-danger">
+            {{ forms.errors|striptags }}
+        </small>
+        </div>
+       {% endfor %}
+     <br>
+<button type="submit" class="btn btn-success"><i class="fa-solid fa-database"></i>Submit</button>
+     <br>
+     <br>
+     <br>
+     <a href="{% url 'products_list' %}"class="btn btn-success">Go To Product List</a>
+</form>
+
+ {% endblock %}
